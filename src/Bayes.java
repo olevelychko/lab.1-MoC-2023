@@ -3,14 +3,14 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+
 public class Bayes {
 
-    public static HashMap<Integer,ArrayList<StringBuilder>> calculationC(ArrayList<Integer> C)
-    {
-        HashMap<Integer,ArrayList<StringBuilder>> probC = new HashMap<>();
+    public static HashMap<Integer, ArrayList<StringBuilder>> calculationC(ArrayList<Integer> C) {
+        HashMap<Integer, ArrayList<StringBuilder>> probC = new HashMap<>();
         StringBuilder coords = new StringBuilder();
-        int count=0;
-        while(count<20) {
+        int count = 0;
+        while (count < 20) {
             ArrayList<StringBuilder> allCoords = new ArrayList<>();
             for (int k = 0; k < C.size(); k++) {
                 if (C.get(k) == count) {
@@ -29,33 +29,28 @@ public class Bayes {
         return probC;
     }
 
-    private static ArrayList<Integer> deformat(StringBuilder s)
-    {
+    private static ArrayList<Integer> deformat(StringBuilder s) {
         ArrayList<Integer> coordinates = new ArrayList<>();
-        StringBuilder temp;
-        int l = 0;
-        l = s.indexOf("+");
-        coordinates.add(0, Integer.valueOf(s.substring(0,l)));
-        coordinates.add(1,Integer.valueOf(s.substring(l+1)));
+        int l = s.indexOf("+");
+        coordinates.add(0, Integer.valueOf(s.substring(0, l)));
+        coordinates.add(1, Integer.valueOf(s.substring(l + 1)));
         return coordinates;
     }
 
-    public static void probabilityC(HashMap<Integer,ArrayList<StringBuilder>> coordsC, ArrayList<Double> m, ArrayList<Double> k)
-    {
+    public static double probabilityC(HashMap<Integer, ArrayList<StringBuilder>> coordsC, ArrayList<Double> m, ArrayList<Double> k) {
         int count = 0;
+        double probC = 0; //put on line 55, if we will need separate probabilities for different C
         while (count < 20) {
             ArrayList<StringBuilder> coords = coordsC.get(count);
-            for(int l = 0; l < coords.size(); l++)
-            {
-                StringBuilder a = coords.get(l);
-                System.out.println(a);
+            for (StringBuilder a : coords) {
                 ArrayList<Integer> intcoord = deformat(a);
                 int i = intcoord.get(0);
                 int j = intcoord.get(1);
-                System.out.println(i + " " + j);
+                probC = (m.get(j) * k.get(i)) + probC;
             }
             count++;
         }
+        return probC;
     }
 
     public static void main(String[] args) throws Exception {
@@ -74,8 +69,7 @@ public class Bayes {
             }
         }
         BufferedReader reader1 = new BufferedReader(new FileReader("C:\\prob_01.csv"));
-        while ((line=reader1.readLine()) != null)
-        {
+        while ((line = reader1.readLine()) != null) {
             scanner = new Scanner(line);
             scanner.useDelimiter(",");
             while (scanner.hasNext()) {
@@ -84,16 +78,15 @@ public class Bayes {
             }
         }
         reader.close();
-        for(int i = 20; i < 40; i++)
-        {
+        for (int i = 20; i < 40; i++) {
             key.add(plainText.get(i));
         }
         plainText.removeAll(key);
         System.out.println(plainText);
         System.out.println(key);
-        HashMap m = calculationC(cipherText);
-        probabilityC(m, plainText, key);
+        HashMap<Integer, ArrayList<StringBuilder>> m = calculationC(cipherText);
+        double pC = probabilityC(m, plainText, key);
+        System.out.println(pC);
     }
-
 
 }
