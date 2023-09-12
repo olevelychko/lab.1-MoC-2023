@@ -37,7 +37,8 @@ public class Bayes {
         return coordinates;
     }
 
-    public static double probabilityC(HashMap<Integer, ArrayList<StringBuilder>> coordsC, ArrayList<Double> m, ArrayList<Double> k) {
+    private static double probabilityMC(HashMap<Integer, ArrayList<StringBuilder>> coordsC, ArrayList<Double> m, ArrayList<Double> k)
+    {
         int count = 0;
         double probC = 0; //put on line 55, if we will need separate probabilities for different C
         while (count < 20) {
@@ -49,8 +50,30 @@ public class Bayes {
                 probC = (m.get(j) * k.get(i)) + probC;
             }
             count++;
+            System.out.println(probC);
+            probC = 0.0;
         }
         return probC;
+    }
+
+    public static ArrayList<Double> probabilityC(HashMap<Integer, ArrayList<StringBuilder>> coordsC, ArrayList<Double> m, ArrayList<Double> k) {
+        ArrayList<Double> probabC = new ArrayList<>();
+        int count = 0;
+        double probC = 0; //put on line 55, if we will need separate probabilities for different C
+        while (count < 20) {
+            ArrayList<StringBuilder> coords = coordsC.get(count);
+            for (StringBuilder a : coords) {
+                ArrayList<Integer> intcoord = deformat(a);
+                int i = intcoord.get(0);
+                int j = intcoord.get(1);
+                probC = (m.get(j) * k.get(i)) + probC;
+            }
+            count++;
+            probabC.add(probC);
+            System.out.println(probC);
+            probC = 0.0;
+        }
+        return probabC;
     }
 
     public static void main(String[] args) throws Exception {
@@ -85,8 +108,7 @@ public class Bayes {
         System.out.println(plainText);
         System.out.println(key);
         HashMap<Integer, ArrayList<StringBuilder>> m = calculationC(cipherText);
-        double pC = probabilityC(m, plainText, key);
+        ArrayList<Double> pC = probabilityC(m, plainText, key);
         System.out.println(pC);
     }
-
 }
