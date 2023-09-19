@@ -6,27 +6,24 @@ import java.util.Scanner;
 
 public class Bayes {
 
-    public static HashMap<Integer, ArrayList<StringBuilder>> calculationC(ArrayList<Integer> C) {
-        HashMap<Integer, ArrayList<StringBuilder>> probC = new HashMap<>();
-        StringBuilder coords = new StringBuilder();
+    public static ArrayList<Double> calculationC(ArrayList<Integer> C, ArrayList<Double> M, ArrayList<Double> K) {
+        ArrayList<Double> probabC = new ArrayList<>();
         int count = 0;
+        double probC = 0;
         while (count < 20) {
-            ArrayList<StringBuilder> allCoords = new ArrayList<>();
             for (int k = 0; k < C.size(); k++) {
                 if (C.get(k) == count) {
                     int i = k / 20;
                     int j = k % 20;
-                    coords.append(i);
-                    coords.append("+");
-                    coords.append(j);
-                    allCoords.add(coords);
-                    coords = new StringBuilder();
+                    probC = (M.get(j) * K.get(i)) + probC;
                 }
             }
-            probC.put(count, allCoords);
             count++;
+            probabC.add(probC);
+            System.out.printf("%.2f%n", probC);
+            probC = 0.0;
         }
-        return probC;
+        return probabC;
     }
 
     public static ArrayList<Double> calculationMC(ArrayList<Integer> C, ArrayList<Double> M, ArrayList<Double> K) {
@@ -36,9 +33,9 @@ public class Bayes {
         while (countM < 20) {
             while (countC < 20) {
                 for (int k = 0; k < C.size(); k++) {
-                    if (C.get(k) == countC && k / 20 == countM) {
-                        System.out.println(" M " + countM + " C " + countC + " K " + k % 20);
-                        allMC.add((double) (M.get(countM) * K.get(k % 20)));
+                    if (C.get(k) == countC && k % 20 == countM) {
+                        System.out.println(" M " + countM + " C " + countC + " K " + k / 20);
+                        allMC.add(M.get(countM) * K.get(k / 20));
                     }
                 }
                 countC++;
@@ -127,8 +124,8 @@ public class Bayes {
         plainText.removeAll(key);
         System.out.println(plainText);
         System.out.println(key);
-        HashMap<Integer, ArrayList<StringBuilder>> m = calculationC(cipherText);
-        ArrayList<Double> pC = probabilityC(m, plainText, key);
+        calculationC(cipherText, plainText, key);
+        //ArrayList<Double> pC = probabilityC(m, plainText, key);
         //System.out.println(pC);
         calculationMC(cipherText, plainText, key);
     }
