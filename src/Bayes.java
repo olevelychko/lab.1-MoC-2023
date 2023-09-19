@@ -29,6 +29,27 @@ public class Bayes {
         return probC;
     }
 
+    public static ArrayList<Double> calculationMC(ArrayList<Integer> C, ArrayList<Double> M, ArrayList<Double> K) {
+        ArrayList<Double> allMC = new ArrayList<>();
+        int countC = 0;
+        int countM = 0;
+        while (countM < 20) {
+            while (countC < 20) {
+                for (int k = 0; k < C.size(); k++) {
+                    if (C.get(k) == countC && k / 20 == countM) {
+                        System.out.println(" M " + countM + " C " + countC + " K " + k % 20);
+                        allMC.add((double) (M.get(countM) * K.get(k % 20)));
+                    }
+                }
+                countC++;
+            }
+            countC = 0;
+            countM++;
+        }
+        System.out.println(allMC);
+        return allMC;
+    }
+
     private static ArrayList<Integer> deformat(StringBuilder s) {
         ArrayList<Integer> coordinates = new ArrayList<>();
         int l = s.indexOf("+");
@@ -37,8 +58,7 @@ public class Bayes {
         return coordinates;
     }
 
-    private static double probabilityMC(HashMap<Integer, ArrayList<StringBuilder>> coordsC, ArrayList<Double> m, ArrayList<Double> k)
-    {
+    private static double probabilityMC(HashMap<Integer, ArrayList<StringBuilder>> coordsC, ArrayList<Double> m, ArrayList<Double> k) {
         int count = 0;
         double probC = 0; //put on line 55, if we will need separate probabilities for different C
         while (count < 20) {
@@ -70,7 +90,7 @@ public class Bayes {
             }
             count++;
             probabC.add(probC);
-            System.out.println(probC);
+            System.out.printf("%.2f%n", probC);
             probC = 0.0;
         }
         return probabC;
@@ -109,6 +129,7 @@ public class Bayes {
         System.out.println(key);
         HashMap<Integer, ArrayList<StringBuilder>> m = calculationC(cipherText);
         ArrayList<Double> pC = probabilityC(m, plainText, key);
-        System.out.println(pC);
+        //System.out.println(pC);
+        calculationMC(cipherText, plainText, key);
     }
 }
