@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Scanner;
 
 public class Bayes {
@@ -30,14 +29,17 @@ public class Bayes {
         ArrayList<Double> allMC = new ArrayList<>();
         int countC = 0;
         int countM = 0;
+        double sumC = 0.0;
         while (countM < 20) {
             while (countC < 20) {
                 for (int k = 0; k < C.size(); k++) {
                     if (C.get(k) == countC && k % 20 == countM) {
-                        System.out.println(" M " + countM + " C " + countC + " K " + k / 20);
-                        allMC.add(M.get(countM) * K.get(k / 20));
+                        //  System.out.println(" M " + countM + " C " + countC + " K " + k / 20);
+                        sumC = (M.get(countM) * K.get(k / 20)) + sumC;
                     }
                 }
+                allMC.add(sumC);
+                sumC = 0.0;
                 countC++;
             }
             countC = 0;
@@ -47,51 +49,15 @@ public class Bayes {
         return allMC;
     }
 
-    private static ArrayList<Integer> deformat(StringBuilder s) {
-        ArrayList<Integer> coordinates = new ArrayList<>();
-        int l = s.indexOf("+");
-        coordinates.add(0, Integer.valueOf(s.substring(0, l)));
-        coordinates.add(1, Integer.valueOf(s.substring(l + 1)));
-        return coordinates;
+    public static ArrayList<Double> probabilityMIC(ArrayList<Double> probabC, ArrayList<Double> probabMC) {
+        ArrayList<Double> MC = new ArrayList<>();
+        for (int i = 0; i < probabMC.size(); i++) {
+            MC.add(probabMC.get(i) / probabC.get(i % 20));
+        }
+        System.out.println(MC);
+        return MC;
     }
 
-    private static double probabilityMC(HashMap<Integer, ArrayList<StringBuilder>> coordsC, ArrayList<Double> m, ArrayList<Double> k) {
-        int count = 0;
-        double probC = 0; //put on line 55, if we will need separate probabilities for different C
-        while (count < 20) {
-            ArrayList<StringBuilder> coords = coordsC.get(count);
-            for (StringBuilder a : coords) {
-                ArrayList<Integer> intcoord = deformat(a);
-                int i = intcoord.get(0);
-                int j = intcoord.get(1);
-                probC = (m.get(j) * k.get(i)) + probC;
-            }
-            count++;
-            System.out.println(probC);
-            probC = 0.0;
-        }
-        return probC;
-    }
-
-    public static ArrayList<Double> probabilityC(HashMap<Integer, ArrayList<StringBuilder>> coordsC, ArrayList<Double> m, ArrayList<Double> k) {
-        ArrayList<Double> probabC = new ArrayList<>();
-        int count = 0;
-        double probC = 0; //put on line 55, if we will need separate probabilities for different C
-        while (count < 20) {
-            ArrayList<StringBuilder> coords = coordsC.get(count);
-            for (StringBuilder a : coords) {
-                ArrayList<Integer> intcoord = deformat(a);
-                int i = intcoord.get(0);
-                int j = intcoord.get(1);
-                probC = (m.get(j) * k.get(i)) + probC;
-            }
-            count++;
-            probabC.add(probC);
-            System.out.printf("%.2f%n", probC);
-            probC = 0.0;
-        }
-        return probabC;
-    }
 
     public static void main(String[] args) throws Exception {
         ArrayList<Double> plainText = new ArrayList<>();
@@ -124,9 +90,8 @@ public class Bayes {
         plainText.removeAll(key);
         System.out.println(plainText);
         System.out.println(key);
-        calculationC(cipherText, plainText, key);
-        //ArrayList<Double> pC = probabilityC(m, plainText, key);
-        //System.out.println(pC);
-        calculationMC(cipherText, plainText, key);
+        ArrayList<Double> pC = calculationC(cipherText, plainText, key);
+        ArrayList<Double> pMC = calculationMC(cipherText, plainText, key);
+        probabilityMIC(pC, pMC);
     }
 }
