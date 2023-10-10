@@ -25,6 +25,7 @@ public class Bayes {
         return probabC;
     }
 
+
     public static ArrayList<Double> calculationMC(ArrayList<Integer> C, ArrayList<Double> M, ArrayList<Double> K) {
         ArrayList<Double> allMC = new ArrayList<>();
         int countC = 0;
@@ -49,13 +50,55 @@ public class Bayes {
         return allMC;
     }
 
+
     public static ArrayList<Double> probabilityMIC(ArrayList<Double> probabC, ArrayList<Double> probabMC) {
+        System.out.println("P(M|C)");
         ArrayList<Double> MC = new ArrayList<>();
         for (int i = 0; i < probabMC.size(); i++) {
             MC.add(probabMC.get(i) / probabC.get(i % 20));
         }
-        System.out.println(MC);
+        showTable(MC);
         return MC;
+    }
+
+
+    private static void showTable(ArrayList<Double> MC) {
+        for (int i = 0; i < MC.size(); i++) {
+            System.out.print(String.format("%.2f", MC.get(i)) + " ");
+            if ((i + 1) % 20 == 0) {
+                System.out.println();
+            }
+        }
+        System.out.println();
+        System.out.println("______________________________________________________________________________");
+    }
+
+
+    public static ArrayList<Double> deterministic(ArrayList<Double> MC) {
+        System.out.println("Deterministic function");
+        ArrayList<Double> Det = new ArrayList<>();
+        double maxEl = -1;
+        int prevMaxPos = 0;
+        int maxPos;
+        int j = 0;
+        while (j < 20) {
+            for (int i = j * 20; i < 20 + j * 20; i++) {
+                if (MC.get(i) > maxEl) {
+                    maxEl = MC.get(i);
+                    maxPos = i;
+                    Det.add(maxPos, 1.0);
+                    if (prevMaxPos != maxPos) {
+                        Det.set(prevMaxPos, 0.0);
+                        prevMaxPos = i;
+                    }
+                } else Det.add(i, 0.0);
+            }
+            maxEl = -1;
+            prevMaxPos = 0;
+            j++;
+        }
+        showTable(Det);
+        return Det;
     }
 
 
@@ -92,6 +135,7 @@ public class Bayes {
         System.out.println(key);
         ArrayList<Double> pC = calculationC(cipherText, plainText, key);
         ArrayList<Double> pMC = calculationMC(cipherText, plainText, key);
-        probabilityMIC(pC, pMC);
+        ArrayList<Double> MC = probabilityMIC(pC, pMC);
+        deterministic(MC);
     }
 }
