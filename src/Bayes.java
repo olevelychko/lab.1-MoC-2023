@@ -101,6 +101,43 @@ public class Bayes {
         return Det;
     }
 
+    public static ArrayList<Double> stochastic(ArrayList<Double> MC) {
+        System.out.println("Stochastic function");
+        ArrayList<Double> Stoch = new ArrayList<>();
+        ArrayList<Integer> sameMaxPos = new ArrayList<>();
+        double maxEl = -1;
+        int prevMaxPos = 0;
+        int maxPos;
+        int j = 0;
+        while (j < 20) {
+            for (int i = j * 20; i < 20 + j * 20; i++) {
+                if (MC.get(i) > maxEl) {
+                    sameMaxPos = new ArrayList<>();
+                    maxEl = MC.get(i);
+                    maxPos = i;
+                    Stoch.add(maxPos, 1.0);
+                    if (prevMaxPos != maxPos) {
+                        Stoch.set(prevMaxPos, 0.0);
+                        prevMaxPos = i;
+                    }
+                } else Stoch.add(i, 0.0);
+                if (MC.get(i) == maxEl) {
+                    sameMaxPos.add(i);
+                }
+            }
+            int numbSameMax = sameMaxPos.size();
+            for (Integer sameMaxPo : sameMaxPos) {
+                Stoch.set(sameMaxPo, 1.0 / numbSameMax);
+            }
+            sameMaxPos = new ArrayList<>();
+            maxEl = -1;
+            prevMaxPos = 0;
+            j++;
+        }
+        showTable(Stoch);
+        return Stoch;
+    }
+
 
     public static void main(String[] args) throws Exception {
         ArrayList<Double> plainText = new ArrayList<>();
@@ -137,5 +174,6 @@ public class Bayes {
         ArrayList<Double> pMC = calculationMC(cipherText, plainText, key);
         ArrayList<Double> MC = probabilityMIC(pC, pMC);
         deterministic(MC);
+        stochastic(MC);
     }
 }
