@@ -46,7 +46,8 @@ public class Bayes {
             countC = 0;
             countM++;
         }
-        System.out.println(allMC);
+        //System.out.println(allMC);
+        showTable(allMC);
         return allMC;
     }
 
@@ -138,6 +139,18 @@ public class Bayes {
         return Stoch;
     }
 
+    public static double Loss(ArrayList<Double> MC, ArrayList<Double> function)
+    {
+        double loss = 0.0;
+        for (int i = 0; i < MC.size(); i++) {
+            if (function.get(i) == 0) {
+                loss = loss + MC.get(i);
+            }
+        }
+        System.out.println("Loss in function = " + loss);
+        return loss;
+    }
+
 
     public static void main(String[] args) throws Exception {
         ArrayList<Double> plainText = new ArrayList<>();
@@ -173,7 +186,9 @@ public class Bayes {
         ArrayList<Double> pC = calculationC(cipherText, plainText, key);
         ArrayList<Double> pMC = calculationMC(cipherText, plainText, key);
         ArrayList<Double> MC = probabilityMIC(pC, pMC);
-        deterministic(MC);
-        stochastic(MC);
+        ArrayList<Double> Det = deterministic(MC);
+        Loss(pMC, Det);
+        ArrayList<Double> Stoch = stochastic(MC);
+        Loss(pMC, Stoch);
     }
 }
