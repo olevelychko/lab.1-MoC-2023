@@ -82,17 +82,19 @@ public class Bayes {
         int prevMaxPos = 0;
         int maxPos;
         int j = 0;
+        int p = 0;
         while (j < 20) {
-            for (int i = j * 20; i < 20 + j * 20; i++) {
+            for (int i = j ; i < MC.size(); i+=20) {
                 if (MC.get(i) > maxEl) {
                     maxEl = MC.get(i);
-                    maxPos = i;
+                    maxPos = p;
                     Det.add(maxPos, 1.0);
                     if (prevMaxPos != maxPos) {
                         Det.set(prevMaxPos, 0.0);
-                        prevMaxPos = i;
+                        prevMaxPos = p;
                     }
-                } else Det.add(i, 0.0);
+                } else Det.add(p, 0.0);
+                p++;
             }
             maxEl = -1;
             prevMaxPos = 0;
@@ -102,6 +104,7 @@ public class Bayes {
         return Det;
     }
 
+
     public static ArrayList<Double> stochastic(ArrayList<Double> MC) {
         System.out.println("Stochastic function");
         ArrayList<Double> Stoch = new ArrayList<>();
@@ -110,21 +113,23 @@ public class Bayes {
         int prevMaxPos = 0;
         int maxPos;
         int j = 0;
+        int p = 0;
         while (j < 20) {
-            for (int i = j * 20; i < 20 + j * 20; i++) {
+            for (int i = j ; i < MC.size(); i+=20) {
                 if (MC.get(i) > maxEl) {
                     sameMaxPos = new ArrayList<>();
                     maxEl = MC.get(i);
-                    maxPos = i;
+                    maxPos = p;
                     Stoch.add(maxPos, 1.0);
                     if (prevMaxPos != maxPos) {
                         Stoch.set(prevMaxPos, 0.0);
-                        prevMaxPos = i;
+                        prevMaxPos = p;
                     }
-                } else Stoch.add(i, 0.0);
+                } else Stoch.add(p, 0.0);
                 if (MC.get(i) == maxEl) {
-                    sameMaxPos.add(i);
+                    sameMaxPos.add(p);
                 }
+                p++;
             }
             int numbSameMax = sameMaxPos.size();
             for (Integer sameMaxPo : sameMaxPos) {
@@ -142,10 +147,17 @@ public class Bayes {
     public static double Loss(ArrayList<Double> MC, ArrayList<Double> function)
     {
         double loss = 0.0;
-        for (int i = 0; i < MC.size(); i++) {
-            if (function.get(i) == 0) {
-                loss = loss + MC.get(i);
+        int i = 0;
+        int j = 0;
+        while(i < function.size()) {
+            while (j < MC.size()) {
+                if (function.get(i) == 0) {
+                    loss = loss + MC.get(j);
+                }
+                i++;
+                j+=20;
             }
+            j= i /20;
         }
         System.out.println("Loss in function = " + loss);
         return loss;
