@@ -154,6 +154,10 @@ public class Bayes {
                 if (function.get(i) == 0) {
                     loss = loss + MC.get(j);
                 }
+                if (function.get(i) != 0 && function.get(i) != 1)
+                {
+                    loss = loss + MC.get(j)*(1-function.get(i));
+                }
                 i++;
                 j+=20;
             }
